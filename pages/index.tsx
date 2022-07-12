@@ -1,43 +1,29 @@
+import { Typography } from "@mui/material";
 import type { NextPage } from "next";
+import { ShopLayout } from "../components/layouts";
+import { ProductList } from "../components/products";
+import { FullScreenLoading } from "../components/ui";
+import { useProducts } from "../hooks";
 
-import { client } from "lib/sanity-client";
-import { HeroBanner, FooterBanner, Product } from "components";
-import { Product as TProduct, BannerData } from "../types-definition/types";
+const Home: NextPage = () => {
+  const { products, isLoading } = useProducts("/products");
 
-interface Props {
-  products: TProduct[];
-  bannerData: BannerData[];
-}
-
-const Home: NextPage<Props> = ({ products, bannerData }) => {
   return (
-    <section>
-      {bannerData?.length && bannerData[1] && (
-        <HeroBanner data={bannerData[1]} />
-      )}
+    <ShopLayout
+      title={"Owl Clothes - Accueil"}
+      pageDescription={"Page principale de Owl Clothes"}
+    >
+      <Typography variant="h1" component={"h1"}>
+        Boutique
+      </Typography>
+      <Typography variant="h2" component={"h2"} sx={{ mb: 1 }}>
+        Tous les produits
+      </Typography>
 
-      <section className="products-container">
-        {products?.map((product) => (
-          <Product key={product._id} product={product} />
-        ))}
-      </section>
-      {bannerData?.length && bannerData[0] && (
-        <FooterBanner data={bannerData[0]} />
-      )}
-    </section>
+      {isLoading ? <FullScreenLoading /> : <ProductList products={products} />}
+    </ShopLayout>
   );
 };
 
-export const getServerSideProps = async () => {
-  const query = '*[_type == "product"]';
-  const products = await client.fetch(query);
-
-  const bannerQuery = '*[_type == "banner"]';
-  const bannerData = await client.fetch(bannerQuery);
-
-  return {
-    props: { products, bannerData },
-  };
-};
-
 export default Home;
+

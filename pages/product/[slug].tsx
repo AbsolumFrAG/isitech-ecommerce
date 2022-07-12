@@ -1,150 +1,135 @@
-import React, { useState } from "react";
-import {
-  AiOutlineMinus,
-  AiOutlinePlus,
-  AiFillStar,
-  AiOutlineStar,
-} from "react-icons/ai";
-
-import { client, urlFor } from "lib/sanity-client";
-import { Product } from "../../components";
-import { Product as TProduct } from "types-definition/types";
-import { useAppContext } from "../../context/AppContext";
+import { useState, useContext } from "react";
+import { useRouter } from "next/router";
+import { Button, Chip, Grid, Typography, Box } from "@mui/material";
+import { ShopLayout } from "../../components/layouts";
+import { ProductSlideshow, SizeSelector } from "../../components/products";
+import { ItemCounter } from "../../components/ui";
+import { IProduct, ICartProduct, ISize } from "../../interfaces";
+import { dbProducts } from "../../database";
+import { NextPage, GetStaticProps, GetStaticPaths } from "next";
+import { CartContext } from "../../context";
 
 interface Props {
-    product: TProduct;
-    products: TProduct[];
+  product: IProduct;
 }
 
-const ProductDetails = ({ product, products }: Props) => {
-    const { image, name, details, price } = product;
-    const [index, setIndex] = useState(0);
-    const { decQty, incQty, currentQty, setShowCart, onAddProduct } =
-        useAppContext();
+const ProductPage: NextPage<Props> = ({ product }) => {
+  const router = useRouter();
+  const { addProductToCart } = useContext(CartContext);
 
-    const handleBuyNow = () => {
-        onAddProduct(product, currentQty);
-        setShowCart(true);
-    };
+  const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+    _id: product._id,
+    image: product.images[0],
+    price: product.price,
+    size: undefined,
+    slug: product.slug,
+    title: product.title,
+    gender: product.gender,
+    quantity: 1,
+  });
 
-    return (
-        <div>
-            <div className="product-detail-container">
-                <div>
-                    <div className="image-container">
-                        <img
-                            src={urlFor(image && image[index]).toString()}
-                            className="product-detail-image"
-                        />
-                    </div>
-                    <div className="small-images-container">
-                        {image?.map((item, i) => (
-                            <img
-                                key={i}
-                                src={urlFor(item).toString()}
-                                className={
-                                    i === index ? "small-index selected-image" : "small-image"
-                                }
-                                onMouseEnter={() => setIndex(i)}
-                            />
-                        ))}
-                    </div>
-                </div>
+  const onSelectedSize = (size: ISize) => {
+    setTempCartProduct({ ...tempCartProduct, size: size });
+  };
 
-                <div className="product-detail-desc">
-                    <h1>{name}</h1>
-                    <div className="reviews">
-                        <div>
-                            <AiFillStar />
-                            <AiFillStar />
-                            <AiFillStar />
-                            <AiFillStar />
-                            <AiOutlineStar />
-                        </div>
-                        <p>(20)</p>
-                    </div>
-                    <h4>Détails : </h4>
-                    <p>{details}</p>
-                    <p className="price">${price}</p>
-                    <div className="quantity">
-                        <h3>Quantité :</h3>
-                        <p className="quantity-desc">
-                            <span className="minus" onClick={decQty}>
-                                <AiOutlineMinus />
-                            </span>
-                            <span className="num">{currentQty}</span>
-                            <span className="plus" onClick={incQty}>
-                                <AiOutlinePlus />
-                            </span>
-                        </p>
-                    </div>
-                    <div className="buttons">
-                        <button
-                            type="button"
-                            className="add-to-cart"
-                            onClick={() => onAddProduct(product, currentQty)}
-                        >
-                            Ajouter au panier
-                        </button>
-                        <button type="button" className="buy-now" onClick={handleBuyNow}>
-                            Acheter maintenant
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div className="maylike-products-wrapper">
-                <h2>Vous pourriez aussi aimer</h2>
-                <div className="marquee">
-                    <div className="maylike-products-container track">
-                        {products.map((item) => (
-                            <Product key={item._id} product={item} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export const getStaticPaths = async () => {
-    const queryProductsSlug = `*[_type == "product"] {
-        slug {
-            current
-        }
-    }
-    `;
-
-    const products: TProduct[] = await client.fetch(queryProductsSlug);
-
-    const paths = products.map((product) => ({
-        params: {
-            slug: product.slug.current,
-        },
+  const onUpdateQuantity = (quantity: number) => {
+    setTempCartProduct((currentProduct) => ({
+      ...currentProduct,
+      quantity,
     }));
+  };
 
-    return {
-        paths,
-        fallback: "blocking",
-    };
+  const onAddToCart = () => {
+    if (tempCartProduct.size === undefined) {
+      return;
+    }
+    addProductToCart(tempCartProduct);
+    router.push("/cart");
+  };
+
+  return (
+    <ShopLayout title={product.title} pageDescription={product.description}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={7}>
+          <ProductSlideshow images={product.images} />
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <Box display={"flex"} flexDirection="column">
+            <Typography variant="h1" component="h1">
+              {product.title}
+            </Typography>
+            <Typography variant="subtitle1" component="h2">
+              {product.price}€
+            </Typography>
+
+            <Box sx={{ my: 2 }}>
+              <Typography variant="subtitle2">Quantité</Typography>
+              <ItemCounter
+                currentValue={tempCartProduct.quantity}
+                maxValue={product.inStock > 10 ? 10 : product.inStock}
+                updateQuantity={onUpdateQuantity}
+              />
+              <SizeSelector
+                selectedSize={tempCartProduct.size}
+                sizes={product.sizes}
+                onSelectedSize={(size: ISize) => onSelectedSize(size)}
+              />
+            </Box>
+
+            {product.inStock ? (
+              <Button
+                color="secondary"
+                className="circular-btn"
+                onClick={onAddToCart}
+              >
+                {tempCartProduct.size
+                  ? "Ajouter au panier"
+                  : "Sélectionner une taille"}
+              </Button>
+            ) : (
+              <Chip label="Pas disponible" color="error" variant="outlined" />
+            )}
+
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle2">Description</Typography>
+              <Typography variant="body2">{product.description}</Typography>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </ShopLayout>
+  );
 };
 
-interface StaticProps {
-    params: {
-        slug: string;
-    };
-}
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
+  const slugs = await dbProducts.getAllProductsSlug();
 
-export const getStaticProps = async ({ params: { slug } }: StaticProps) => {
-    const queryCurrentProduct = `*[_type == "product" && slug.current == '${slug}'][0]`;
-    const queryAllProducts = '*[_type == "product"]';
-
-    const product = await client.fetch(queryCurrentProduct);
-    const products = await client.fetch(queryAllProducts);
-
-    return {
-        props: { products, product },
-    };
+  return {
+    paths: slugs.map(({ slug }) => ({ params: { slug } })),
+    fallback: "blocking",
+  };
 };
 
-export default ProductDetails;
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug = "" } = params as { slug: string };
+
+  const product = await dbProducts.getProductBySlug(slug);
+
+  if (!product) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      product,
+    },
+    revalidate: 86400,
+  };
+};
+
+export default ProductPage;
