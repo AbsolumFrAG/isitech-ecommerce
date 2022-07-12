@@ -32,6 +32,7 @@ export default NextAuth({
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
 
   // Custom pages
   pages: {
