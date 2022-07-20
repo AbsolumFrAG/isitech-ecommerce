@@ -1,7 +1,7 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(req: NextRequest | any, ev: NextFetchEvent) {
+export async function middleware(req: NextRequest, ev: NextFetchEvent) {
     const session: any = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     const { origin, pathname } = req.nextUrl.clone();
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest | any, ev: NextFetchEvent) {
     if (req.nextUrl.pathname.startsWith('/admin')) {
         const validRoles = ['admin', 'super-user', 'CEO'];
         if (!validRoles.includes(session.user.role)) {
-            return NextResponse.redirect(`${origin}`);
+            return NextResponse.redirect(`${origin}/`);
         }
     }
 
