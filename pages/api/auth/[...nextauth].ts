@@ -6,10 +6,6 @@ import { dbUsers } from "../../../database";
 export default NextAuth({
   // Configurer un ou plusieurs fournisseurs d'authentification
   providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
     CredentialsProvider({
       name: "Login personnalisé",
       credentials: {
