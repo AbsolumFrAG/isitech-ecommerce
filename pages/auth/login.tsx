@@ -17,7 +17,6 @@ import { isEmail } from "../../utils/validations";
 import { ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { getSession, signIn, getProviders } from "next-auth/react";
-import { NextApiRequestCookies } from "next/dist/server/api-utils";
 
 type FormData = {
   email: string;
@@ -139,8 +138,8 @@ const LoginPage = () => {
             >
               <Divider sx={{ width: "100%", mb: 2 }} />
               {Object.values(providers).map((provider: any) => {
-                if (provider.id === "crendentials")
-                  return <div key="crendentials"></div>;
+                if (provider.id === "credentials")
+                  return <div key="credentials"></div>;
                 return (
                   <Button
                     key={provider.id}
