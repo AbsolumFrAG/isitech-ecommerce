@@ -19,6 +19,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 
 export const NavBar = () => {
   const { toggleSideMenu } = useContext(UiContext);
@@ -36,12 +37,13 @@ export const NavBar = () => {
   };
 
   return (
-    <AppBar>
+    <AppBar sx={{
+      paddingRight: { pr: "100px" },
+    }}>
       <Toolbar>
         <NextLink href="/" passHref>
           <Link display={"flex"} alignItems="center">
-            <Typography variant="h6">Owl Clothes |</Typography>
-            <Typography sx={{ ml: 0.5 }}>Shop</Typography>
+            <Image src={"/logohibou.svg"} width={50} height={50} />
           </Link>
         </NextLink>
 
@@ -86,6 +88,7 @@ export const NavBar = () => {
           <Input
             sx={{
               display: { xs: "none", sm: "flex" },
+              backgroundColor: "white"
             }}
             className="fadeIn"
             autoFocus={true}
@@ -110,7 +113,9 @@ export const NavBar = () => {
               display: { xs: "none", sm: "flex" },
             }}
           >
-            <SearchOutlined />
+            <SearchOutlined sx={{
+              color: "white",
+            }} />
           </IconButton>
         )}
 
