@@ -1,7 +1,8 @@
 import NextLink from "next/link";
+import Image from "next/image";
 import { useContext } from "react";
 import { UiContext } from "../../context";
-import { AppBar, Box, Button, Link, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Link, Toolbar } from "@mui/material";
 
 export const AdminNavBar = () => {
   const { toggleSideMenu } = useContext(UiContext);
@@ -11,8 +12,7 @@ export const AdminNavBar = () => {
       <Toolbar>
         <NextLink href="/" passHref>
           <Link display={"flex"} alignItems="center">
-            <Typography variant="h6">Owl Clothes |</Typography>
-            <Typography sx={{ ml: 0.5 }}>Shop</Typography>
+            <Image src={"/logohibou.svg"} width={50} height={50} />
           </Link>
         </NextLink>
 

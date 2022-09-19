@@ -129,7 +129,7 @@ export const NavBar = () => {
 
         <NextLink href="/cart" passHref>
           <IconButton>
-            <Badge badgeContent={numberOfItems} color="secondary">
+            <Badge badgeContent={numberOfItems} color="secondary" sx={{ color: 'white' }}>
               <ShoppingCartOutlined />
             </Badge>
           </IconButton>
