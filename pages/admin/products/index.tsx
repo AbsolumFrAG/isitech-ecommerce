@@ -10,6 +10,7 @@ const columns: GridColDef[] = [
   {
     field: "img",
     headerName: "Photo",
+    // @ts-ignore
     renderCell: ({ row }: GridValueGetterParams) => {
       return (
         <a href={`/product/${row.slug}`} target="_blank" rel="noreferrer">
@@ -22,6 +23,7 @@ const columns: GridColDef[] = [
     field: "title",
     headerName: "Titre",
     width: 350,
+    // @ts-ignore
     renderCell: ({ row }: GridValueGetterParams) => {
       return (
         <NextLink href={`/admin/products/${row.slug}`} passHref>

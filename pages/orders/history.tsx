@@ -15,6 +15,7 @@ const columns: GridColDef[] = [
     headerName: "Payé",
     description: "Indique si la commande a été payée ou non",
     width: 200,
+    // @ts-ignore
     renderCell: (params: GridValueGetterParams) => {
       return params.row.paid ? (
         <Chip color="success" label="Payé" variant="outlined" />
@@ -28,6 +29,7 @@ const columns: GridColDef[] = [
     sortable: false,
     headerName: "Voir la commande",
     width: 200,
+    // @ts-ignore
     renderCell: (params: GridValueGetterParams) => {
       return (
         <NextLink href={`/orders/${params.row._id}`} passHref>
