@@ -4,7 +4,7 @@ import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import NextLink from "next/link";
 import useSWR from "swr";
 import { AdminLayout } from "../../../components/layouts/AdminLayout";
-import { IProduct, IUser } from "../../../interfaces";
+import { IProduct } from "../../../interfaces";
 
 const columns: GridColDef[] = [
   {

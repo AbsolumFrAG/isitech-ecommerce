@@ -25,15 +25,12 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-  ListItem,
-  Paper,
   Radio,
   RadioGroup,
   TextField,
 } from "@mui/material";
 import { owlApi } from "../../../api";
 import Product from "../../../models/Products";
-import { get } from "http";
 
 const validTypes = ["shirts", "pants", "hoodies", "hats"];
 const validGender = ["men", "women", "kid", "unisex"];
